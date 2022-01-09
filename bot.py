@@ -248,12 +248,12 @@ def sem(update, context):
     context.user_data['message_id'] = query.message.message_id
     keyboard = []
     temp = []
-    print(query.data)
+    
     if query.data != '2nd' or str(query.data).isdigit():
         context.user_data['year'] = query.data    # year also must fresh
     if query.data == 'fresh':
         context.user_data['school'] = query.data   # if student is fresh then school must also fresh
-    print(context.user_data)
+    
     for i in range(1,3):
         temp.append(InlineKeyboardButton('Semester ' + str(i), callback_data='sem' + str(i)))
     keyboard.append(temp)
@@ -301,15 +301,21 @@ def course(update, context) -> int:
             reply_markup=reply_markup
         )
     else:
-        path = "course_outlines\\"
+        with open("allcourses.json") as courselist:
+            courselist = json.load(courselist)
+        
         BOT.send_message(
             chat_id=query.message.chat_id,
             text="You will Recieve " + s[int(query.data)][0]
         )
 
+        courseCode = s[int(query.data)][1]
+        #print(courseCode)
+        courseFileID = str(courselist[courseCode][1])
+        #print(courseFileID)
         BOT.send_document(
             chat_id=query.message.chat_id,
-            document=open(path + s[int(query.data)][1] +".pdf", 'rb')
+            document=courseFileID
         )
     return Z
 
@@ -341,12 +347,11 @@ def ListAll(update,context):
 
     with open("allcourses.json") as courselist:
         courselist = json.load(courselist)
-    allcourse = courselist["allcourses"]
-    print(allcourse)
+    
     a = []
     j = 0
-    for i in allcourse:
-        a.append([InlineKeyboardButton(i[1],callback_data=str(j))])
+    for i in courselist:
+        a.append([InlineKeyboardButton(courselist[i][0],callback_data=str(j))])
         j += 1
     keyboard = a
     keyboard.append([InlineKeyboardButton('Next ➡️', callback_data='next')])
@@ -362,15 +367,18 @@ def ListAll(update,context):
             reply_markup=reply_markup
         )
     else:
-        path = "course_outlines\\"
+        courseCode = list(courselist)[int(query.data)]
+        courseName = courselist[courseCode][0]
+        courseFileID = courselist[courseCode][1]
+
         BOT.send_message(
             chat_id=query.message.chat_id,
-            text="You will Recieve " + allcourse[int(query.data)][1]
+            text="You will Recieve " + courseName
         )
 
         BOT.send_document(
             chat_id=query.message.chat_id,
-            document=open(path + allcourse[int(query.data)][0] +".pdf", 'rb')
+            document=courseFileID
         )
     context.user_data['next'] = next
     return X
@@ -392,29 +400,29 @@ def searchResult(update, context):
     chat_id = update.message.chat_id
     with open("allcourses.json") as courselist:
         courselist = json.load(courselist)
-    allcourse = courselist["allcourses"]
-    courseCode = ""
+    
     courseName = ""
+    courseFileID = ""
     found = False
-    for course in allcourse:
-        if text == course[1].lower():
+    for course in courselist:
+        if text == courselist[course][0].lower():
             found = True
-            courseCode = course[0]
-            courseName = course[1]
+            courseName = courselist[course][0]
+            courseFileID = courselist[course][1]
     if found:
-        path = "course_outlines\\"
         BOT.send_message(
             chat_id=update.message.chat_id,
             text="You will Recieve " + courseName
         )
         BOT.send_document(
             chat_id=update.message.chat_id,
-            document=open(path + courseCode +".pdf", 'rb')
+            document=courseFileID
         )
     else:
         update.message.reply_text('Course Not Found. please check your spelling')
     return Z
-    
+
+
 def main() -> None:
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
@@ -481,6 +489,7 @@ def main() -> None:
     # Add ConversationHandler to dispatcher that will be used for handling updates
     dp.add_handler(conv_handler)
     dp.add_handler(InlineQueryHandler(inlinequery))
+    
 
     # Start the Bot
     updater.start_polling()
