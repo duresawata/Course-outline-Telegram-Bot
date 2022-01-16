@@ -1,3 +1,4 @@
+from cgitb import text
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot, InlineQueryResultArticle, \
     InputTextMessageContent, ParseMode
 from telegram.ext import (
@@ -6,6 +7,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     ConversationHandler,
     InlineQueryHandler,
+    ChosenInlineResultHandler,
     MessageHandler,
     Filters,
 )
@@ -32,33 +34,48 @@ A, B, C, D, E, F, X, Z = range(8)
 # inline query handler
 def inlinequery(update, context):
     """Handle the inline query."""
+    
     query = update.inline_query.query
-
+    
     if query == "":
         return
+    with open('allcourses.json') as courselist:
+        courselist = json.load(courselist)
+    lst = list(courselist)
+    arr = []
+    dic = {}
+    for i in lst:
+        arr.append(courselist[i][0])
+        dic[courselist[i][0]] = i
+    
+    
+    results = []
+    output = [k for k in arr if query.lower() in k.lower()]
+    bzat = len(output)
+    for i in range(bzat):
+        results.append(
+        InlineQueryResultArticle(
+            id = str(dic[output[i]]),
+            title = output[i],
+            input_message_content=InputTextMessageContent(output[i]),
+        ))
 
-    results = [
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Caps",
-            input_message_content=InputTextMessageContent(query.upper()),
-        ),
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Bold",
-            input_message_content=InputTextMessageContent(
-                f"*{escape_markdown(query)}*", parse_mode=ParseMode.MARKDOWN
-            ),
-        ),
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Italic",
-            input_message_content=InputTextMessageContent(
-                f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
-            ),
-        ),
-    ]
+    
     update.inline_query.answer(results)
+
+def save_inline(update, context):
+    result = update.chosen_inline_result
+    user = result.from_user.id
+    with open("allcourses.json") as courselist:
+        courselist = json.load(courselist)
+    courseFileID = courselist[result['result_id']][1]
+    courseName = courselist[result['result_id']][0]
+    BOT.send_message(user, text = "you will recieve "+courselist[result['result_id']][0])
+    BOT.send_document(
+            user,
+            document=courseFileID
+        )
+    
 
 def start(update, context) -> int:
     """Send message on `/start`."""
@@ -423,6 +440,7 @@ def searchResult(update, context):
     return Z
 
 
+
 def main() -> None:
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
@@ -489,7 +507,7 @@ def main() -> None:
     # Add ConversationHandler to dispatcher that will be used for handling updates
     dp.add_handler(conv_handler)
     dp.add_handler(InlineQueryHandler(inlinequery))
-    
+    dp.add_handler(ChosenInlineResultHandler(save_inline))
 
     # Start the Bot
     updater.start_polling()
