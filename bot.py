@@ -1,4 +1,4 @@
-from cgitb import text
+from xml.dom.minidom import Document
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot, InlineQueryResultArticle, \
     InputTextMessageContent, ParseMode
 from telegram.ext import (
@@ -15,6 +15,11 @@ from telegram.utils.helpers import escape_markdown
 from uuid import uuid4
 import logging
 import json
+import os
+from datetime import datetime
+import csv
+
+admin = "796942491"
 
 # Enable logging
 logging.basicConfig(
@@ -66,22 +71,84 @@ def inlinequery(update, context):
 def save_inline(update, context):
     result = update.chosen_inline_result
     user = result.from_user.id
+    name = result.from_user.first_name
     with open("allcourses.json") as courselist:
         courselist = json.load(courselist)
     courseFileID = courselist[result['result_id']][1]
     courseName = courselist[result['result_id']][0]
-    BOT.send_message(user, text = "you will recieve "+courselist[result['result_id']][0])
+    BOT.send_message(user, text = "you will recieve "+courseName)
     BOT.send_document(
             user,
             document=courseFileID
         )
     
+    # save user
+    headers = ['Name', 'ID', 'Date']
+
+    now = datetime.now()
+    start_date = now.strftime("%y/%m/%y")
+
+    myDict = {'Name': name,'ID': user,'Date': start_date}
+    filename = "Users.csv"
+
+    if os.path.isfile(filename):
+        ids = []
+        with open(filename, 'r') as csvfile:
+            csvreader = csv.reader(csvfile)
+            fields = next(csvreader)
+
+            for row in csvreader:
+                ids.append(row[1])
+            if not str(user) in ids:
+                #print("hi")
+                with open(filename, 'a', newline='') as my_file:
+                    w  = csv.DictWriter(my_file, fieldnames=headers)
+                    w.writerow(myDict)
+            else:
+                pass
+    else:
+        with open(filename, 'w', newline='') as my_file:
+            w  = csv.DictWriter(my_file, fieldnames=headers)
+            w.writeheader()
+            w.writerow(myDict)
 
 def start(update, context) -> int:
     """Send message on `/start`."""
     # Get user that sent /start and log his name
     user = update.message.from_user
     logger.info("Welcome %s!", user.first_name)
+    username = user.first_name
+    userid = update.message.chat_id
+    # save user
+    headers = ['Name', 'ID', 'Date']
+
+    now = datetime.now()
+    start_date = now.strftime("%y/%m/%y")
+
+    myDict = {'Name': username,'ID': userid,'Date': start_date}
+    filename = "Users.csv"
+
+    if os.path.isfile(filename):
+        ids = []
+        with open(filename, 'r') as csvfile:
+            csvreader = csv.reader(csvfile)
+            fields = next(csvreader)
+
+            for row in csvreader:
+                ids.append(row[1])
+
+            if not str(userid) in ids:
+                with open(filename, 'a', newline='') as my_file:
+                    w  = csv.DictWriter(my_file, fieldnames=headers)
+                    w.writerow(myDict)
+            else:
+                pass
+    else:
+        with open(filename, 'w', newline='') as my_file:
+            w  = csv.DictWriter(my_file, fieldnames=headers)
+            w.writeheader()
+            w.writerow(myDict)
+
     #   Build InlineKeyboard where each button has a displayed text
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
@@ -93,6 +160,9 @@ def start(update, context) -> int:
         ],
         [InlineKeyboardButton('Search course', callback_data="search")],
     ]
+    if str(update.message.chat_id) == str(admin):
+        keyboard.append([InlineKeyboardButton("Users", callback_data="all_users")])
+
     keyboard.append([InlineKeyboardButton("Exit ❌", callback_data="exit")])
     reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
     # Send message with text and appended InlineKeyboard
@@ -106,7 +176,18 @@ def start(update, context) -> int:
     # Tell ConversationHandler that we're in state `A` now
     return A
 
-
+def all_users(update, context):
+    fields =[]
+    rows = []
+    filename = "Users.csv"
+    with open(filename, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        fields = next(csvreader)
+        for row in csvreader:
+            row.append(row)
+        my_users = "Total Users = " + str(csvreader.line_num - 1)
+    context.bot.send_message(chat_id = update.effective_chat.id, text = my_users)
+    context.bot.send_document(chat_id = update.effective_chat.id, document = "BQACAgQAAxkBAAIEwWHl3ns3bXJid3Pd2RwtUxtEbiOmAAK7DAACpZ0xU-Y6HfHtLof4IwQ")
 def collage(update, context) -> int:
     """Show new choice of buttons"""
     bot = context.bot
@@ -439,7 +520,8 @@ def searchResult(update, context):
         update.message.reply_text('Course Not Found. please check your spelling')
     return Z
 
-
+def testing(u, c):
+    print(u)
 
 def main() -> None:
     """Run the bot."""
@@ -461,7 +543,8 @@ def main() -> None:
         {
             A : [  CallbackQueryHandler(collage, pattern='^choose_by_year$'),
                    CallbackQueryHandler(search, pattern='^search$'),
-                   CallbackQueryHandler(ListAll, pattern='^ListAll$'), 
+                   CallbackQueryHandler(ListAll, pattern='^ListAll$'),
+                   CallbackQueryHandler(all_users, pattern='^all_users$'),
                    CallbackQueryHandler(end, pattern='^(exit)$')],
 
             B : [ CallbackQueryHandler(school, pattern='^Engineering|Applied$'),
@@ -508,6 +591,7 @@ def main() -> None:
     dp.add_handler(conv_handler)
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(save_inline))
+    dp.add_handler(MessageHandler(Filters.document, testing))
 
     # Start the Bot
     updater.start_polling()
