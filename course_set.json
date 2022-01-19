@@ -178,6 +178,7 @@
         }
     },
     "Applied": {
+<<<<<<< HEAD
         "fresh": {
             "sem1": [
                 ["applied fresh sem1", "TestCode"]
@@ -356,6 +357,9 @@
                 ]
             }
         }
+=======
+
+>>>>>>> e9b2a642b40738e6ebe8213dad7710e95bba107d
     }
 
 
