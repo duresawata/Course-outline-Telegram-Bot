@@ -5,7 +5,7 @@ def all_users(update, context):
     # reads number of total users in from file
 
     filename = "Users.csv"
-    with open(filename, "r") as csvfile:
+    with open(filename, "rb") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             row.append(row)
