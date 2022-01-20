@@ -1,13 +1,13 @@
 from .all_imports import *
 
-
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
 
 
 def year(update, context):
+    """Shows new choice of buttons for Year"""
+
     bot = context.bot
     query = update.callback_query
     context.user_data["message_id"] = query.message.message_id

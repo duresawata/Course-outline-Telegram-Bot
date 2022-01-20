@@ -1,14 +1,13 @@
 from .all_imports import *
 
-
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
+
 
 
 def school(update, context) -> int:
-    """Show new choice of buttons"""
+    """Shows new choice of buttons for school"""
     bot = context.bot
     query = update.callback_query
     keyboard = []
@@ -22,9 +21,24 @@ def school(update, context) -> int:
     if data == "Engineering":
         keyboard = [
             [InlineKeyboardButton("Freshman Division", callback_data="fresh")],
-            [InlineKeyboardButton("School of Electrical Engineering & Computing (SoEEC)",callback_data="SoEEC")],
-            [InlineKeyboardButton("School of Civil Engineering and Architecture (SOCEA)",callback_data="SOCEA")],
-            [InlineKeyboardButton("School of Mechanical, Chemical & Materials Engineering (SoMCME)",callback_data="SoMCME")],
+            [
+                InlineKeyboardButton(
+                    "School of Electrical Engineering & Computing (SoEEC)",
+                    callback_data="SoEEC",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "School of Civil Engineering and Architecture (SOCEA)",
+                    callback_data="SOCEA",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "School of Mechanical, Chemical & Materials Engineering (SoMCME)",
+                    callback_data="SoMCME",
+                )
+            ],
         ]
     elif data == "Applied":
         keyboard = [
@@ -47,6 +61,7 @@ def school(update, context) -> int:
         text="Please Choose Your School!",
         reply_markup=reply_markup,
     )
+    # back
     if query.data == "back" or query.data == "backcol" or query.data == "backap":
         return 3
     if query.data != "back" or query.data != "backcol" or query.data != "backap":

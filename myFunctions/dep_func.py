@@ -6,7 +6,7 @@ BOT = Bot(token["token"])
 
 
 def dep(update, context):
-    """Show new choice of buttons"""
+    """Show new choice of buttons for department"""
     bot = context.bot
     query = update.callback_query
     keyboard = []
@@ -18,20 +18,51 @@ def dep(update, context):
     context.user_data["message_id"] = query.message.message_id
 
     if data == "SoEEC":
-        keyboard = [ 
-            [InlineKeyboardButton('2nd Year 1st Semetser', callback_data='2nd')],
-            [InlineKeyboardButton('Computer Science and Engineering (CSE)', callback_data='CSE')],
-            [InlineKeyboardButton('Electronics and Communication Engineering (ECE)', callback_data='ECE')],
-            [InlineKeyboardButton('Electrical Power and Control Engineering (EPCE)', callback_data='EPCE')]
+        keyboard = [
+            [InlineKeyboardButton("2nd Year 1st Semetser", callback_data="2nd")],
+            [
+                InlineKeyboardButton(
+                    "Computer Science and Engineering (CSE)", callback_data="CSE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "Electronics and Communication Engineering (ECE)",
+                    callback_data="ECE",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "Electrical Power and Control Engineering (EPCE)",
+                    callback_data="EPCE",
+                )
+            ],
         ]
     elif data == "SoMCME":
-        keyboard=[
-            [InlineKeyboardButton('2nd Year 1st Semetser', callback_data='2nd_1st')],
-            [InlineKeyboardButton('Thermal and Aerospace Engineering', callback_data='TAE')],
-            [InlineKeyboardButton('Chemical Engineering', callback_data='CE')],
-            [InlineKeyboardButton('Mechanical Design and Manufacturing Engineering', callback_data='MDME')],
-            [InlineKeyboardButton('Materials Science and Engineering', callback_data='MSE')],
-            [InlineKeyboardButton('Mechanical Systems and Vehicle Engineering', callback_data='MSVE')]
+        keyboard = [
+            [InlineKeyboardButton("2nd Year 1st Semetser", callback_data="2nd_1st")],
+            [
+                InlineKeyboardButton(
+                    "Thermal and Aerospace Engineering", callback_data="TAE"
+                )
+            ],
+            [InlineKeyboardButton("Chemical Engineering", callback_data="CE")],
+            [
+                InlineKeyboardButton(
+                    "Mechanical Design and Manufacturing Engineering",
+                    callback_data="MDME",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "Materials Science and Engineering", callback_data="MSE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "Mechanical Systems and Vehicle Engineering", callback_data="MSVE"
+                )
+            ],
         ]
     elif data == "SOCEA":
         keyboard = [

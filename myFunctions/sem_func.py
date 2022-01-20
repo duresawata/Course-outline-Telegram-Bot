@@ -1,13 +1,12 @@
 from .all_imports import *
 
-
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
 
 
 def sem(update, context):
+    """Show new choice of buttons for Semister"""
     bot = context.bot
     query = update.callback_query
     context.user_data["message_id"] = query.message.message_id
@@ -16,12 +15,17 @@ def sem(update, context):
 
     if query.data != "2nd" or str(query.data).isdigit():
         context.user_data["year"] = query.data
-    
+
     for i in range(1, 3):
-        temp.append(InlineKeyboardButton("Semester " + str(i), callback_data="sem" + str(i)))
+        temp.append(
+            InlineKeyboardButton("Semester " + str(i), callback_data="sem" + str(i))
+        )
     keyboard.append(temp)
 
-    if context.user_data["year"] == "2" and context.user_data["college"] == "Engineering":
+    if (
+        context.user_data["year"] == "2"
+        and context.user_data["college"] == "Engineering"
+    ):
         keyboard = [
             [InlineKeyboardButton("Semester " + str(2), callback_data="sem" + str(2))]
         ]

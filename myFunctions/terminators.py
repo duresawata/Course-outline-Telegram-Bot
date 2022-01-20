@@ -1,5 +1,6 @@
 from .all_imports import *
 
+
 def end(update, context):
     """Returns `ConversationHandler.END`, which tells the
     ConversationHandler that the conversation is over"""
@@ -9,6 +10,6 @@ def end(update, context):
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        text="See you next time!",
+        text="Hope You Satified! send /feedback\nif you have any suggestion.",
     )
     return ConversationHandler.END

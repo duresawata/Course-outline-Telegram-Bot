@@ -3,7 +3,7 @@ from .all_imports import *
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
+admin = token["admin"]
 
 
 # Enable logging
@@ -15,15 +15,18 @@ logger = logging.getLogger(__name__)
 
 
 def start(update, context) -> int:
-    """Send message on `/start`."""
+    """Send Welcome a user, Save him if it is new to this Bot and send Menus on `/start`."""
+
     # Get user that sent /start and log his name
+
     user = update.message.from_user
     logger.info("Welcome %s!", user.first_name)
     username = user.first_name
     userid = update.message.chat_id
+
     # save user if it's new to this bot
     headers = ["Name", "ID", "Date"]
-
+    
     now = datetime.now()
     start_date = now.strftime("%y/%m/%y")
 
@@ -51,10 +54,8 @@ def start(update, context) -> int:
             w.writeheader()
             w.writerow(myDict)
 
-    # Build InlineKeyboard where each button has a displayed text
-    # and a string as callback_data
-    # The keyboard is a list of button rows, where each row is in turn
-    # a list (hence `[[...]]`).
+    # InlineKeyboard for Different Operations
+
     keyboard = [
         [
             InlineKeyboardButton("📋 List courses", callback_data="ListAll"),
@@ -71,17 +72,16 @@ def start(update, context) -> int:
     update.message.reply_text("Welcome", reply_markup=reply_markup)
     context.user_data["message_id"] = update.message.message_id
 
-    if "next" in context.user_data:
-        del context.user_data["next"]
-
     context.user_data["User"] = user
     # print("start", context.user_data)
 
-    # Tell ConversationHandler that we're in state `1` now
+    # Tell ConversationHandler that we're in state "1" now
     return 1
 
 
 def welcomeagain(update, context):
+    """ If User doesn't ended a Conversation yet Welcome him again and show Operations """
+
     # print(context.user_data)
     # print(update.message.chat_id)
 
@@ -108,4 +108,3 @@ def welcomeagain(update, context):
     BOT.delete_message(chat_id=chatid, message_id=context.user_data["message_id"])
     BOT.send_message(chat_id=chatid, text="Welcome Back", reply_markup=reply_markup)
     return 1
-

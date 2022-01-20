@@ -1,11 +1,9 @@
-from . all_imports import *
-
+from .all_imports import *
 
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
-
+admin = token["admin"]
 
 
 def collage(update, context):
@@ -21,12 +19,16 @@ def collage(update, context):
         [InlineKeyboardButton("Exit ❌", callback_data="exit")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Edit and send a new set of buttons
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         text="Please Choose Where your collage!",
         reply_markup=reply_markup,
     )
+
+    # back
     if query.data == "back" or query.data == "backcol":
         return 2
 
