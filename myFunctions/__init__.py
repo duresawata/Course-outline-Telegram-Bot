@@ -5,7 +5,7 @@ from .dep_func import dep
 from .inline_func import inlinequery, save_inline
 from .Listall_func import ListAll
 from .school_func import school
-from .search_func import search, searchResult
+#from .search_func import search, searchResult
 from .sem_func import sem
 from .start_bot import start, welcomeagain
 from .terminators import end

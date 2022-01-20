@@ -1,5 +1,5 @@
 from .all_imports import *
-
+from myFunctions import inlinequery
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
@@ -61,7 +61,7 @@ def start(update, context) -> int:
             InlineKeyboardButton("📋 List courses", callback_data="ListAll"),
             InlineKeyboardButton("👉 choose by Year", callback_data="choose_by_year"),
         ],
-        [InlineKeyboardButton("🔎 Search course", callback_data="search")],
+        [InlineKeyboardButton("🔎 Search course", switch_inline_query_current_chat = "")], #callback_data="search"   
     ]
     if str(update.message.chat_id) == str(admin):
         keyboard.append([InlineKeyboardButton("👨‍🔧 Users", callback_data="all_users")])
@@ -90,7 +90,7 @@ def welcomeagain(update, context):
             InlineKeyboardButton("📋 List courses", callback_data="ListAll"),
             InlineKeyboardButton("👉 choose by Year", callback_data="choose_by_year"),
         ],
-        [InlineKeyboardButton("🔎 Search course", callback_data="search")],
+        [InlineKeyboardButton("🔎 Search course", switch_inline_query_current_chat = "")], #callback_data="search"
     ]
     chatid = None
     try:
