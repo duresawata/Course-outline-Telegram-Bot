@@ -1,25 +1,32 @@
+from myFunctions import *
 from myFunctions.all_imports import *
 
-from myFunctions.course_dist import course
-from myFunctions.start_bot import start, welcomeagain
-from myFunctions.inline_func import inlinequery, save_inline
-from myFunctions.admin_func import all_users
-from myFunctions.Listall_func import ListAll
-from myFunctions.school_func import school
-from myFunctions.dep_func import dep
-from myFunctions.search_func import search, searchResult
-from myFunctions.collage_func import collage
-from myFunctions.year_func import year
-from myFunctions.sem_func import sem
-from myFunctions.terminators import end
 
+""" Bot Token and Admin Id"""
 
 with open("token.json") as j:
     token = json.load(j)
 BOT = Bot(token["token"])
-admin = token['admin']
+admin = token["admin"]
 
-# BOT.send_message(349603690, "Bot underconstruction. please hold.")
+help_message = """   
+    Help Manual
+    => Use The Following Commands\n
+        /start to start a bot
+        /cancel to cancel operation\n
+    for more help reach out 
+            ✉ @duresa_wata
+            ☎ 0996529960
+
+"""
+def help(update, context):
+    BOT.send_message(chat_id=update.effective_chat.id, text=help_message)
+
+def feedback(update, context):
+    text = "Okay.Send me Your feedback /cancel to Cancel\n <strong>At Most 200 Words Allowed!</strong>"
+    #BOT.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
+    pass
+    
 
 def main() -> None:
     """Run the bot."""
@@ -29,12 +36,10 @@ def main() -> None:
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # Setup conversation handler with the states FIRST and SECOND
+    # conversations
     # Use the pattern parameter to pass CallbackQueries with specific
     # data pattern to the corresponding handlers.
-    # ^ means "start of line/string"
-    # $ means "end of line/string"
-    # So ^ABC$ will only allow 'ABC'
+    
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
@@ -96,9 +101,12 @@ def main() -> None:
 
     # Add ConversationHandler to dispatcher that will be used for handling updates
     dp.add_handler(conv_handler)
+
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(save_inline))
     dp.add_handler(CommandHandler("cancel", welcomeagain))
+    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("feedback", feedback))
 
     # Start the Bot
     updater.start_polling()
