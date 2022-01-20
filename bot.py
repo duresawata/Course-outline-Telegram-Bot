@@ -45,7 +45,7 @@ def main() -> None:
         states={
             1: [
                 CallbackQueryHandler(collage, pattern="^choose_by_year$"),
-                CallbackQueryHandler(search, pattern="^search$"),
+                #CallbackQueryHandler(search, pattern="^search$"),
                 CallbackQueryHandler(ListAll, pattern="^ListAll$"),
                 CallbackQueryHandler(all_users, pattern="^all_users$"),
                 CallbackQueryHandler(end, pattern="^(exit)$"),
@@ -90,7 +90,7 @@ def main() -> None:
                 CallbackQueryHandler(sem, pattern="^(back)$"),
                 CallbackQueryHandler(end, pattern="^(exit)$"),
                 CallbackQueryHandler(course, pattern=r"[A-Za-z0-9]"),
-                MessageHandler(Filters.text and ~Filters.command, searchResult),
+                #MessageHandler(Filters.text and ~Filters.command, searchResult),
             ],
         },
         fallbacks=[
