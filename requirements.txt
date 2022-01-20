@@ -1,5 +1,2 @@
-python-telegram-bot
-datetime
-python-csv
-
-
+python-telegram-bot=13
+python-csv=0.0.13
