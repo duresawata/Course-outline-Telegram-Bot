@@ -42,7 +42,7 @@ def course(update, context):
     a = []
     j = 0
     s = None
-
+    courseAdded = False
     if query.data == "2nd":
         k = course_set["Engineering"]["SoEEC"]["2nd_1st"]
         for i in k:
@@ -109,9 +109,8 @@ def course(update, context):
                     a.append([InlineKeyboardButton(i[0], callback_data=str(j))])
                     j += 1
                 keyboard = a
-
     keyboard.append([InlineKeyboardButton("⬅️ Back", callback_data="back")])
-
+    
     # print(context.user_data)
     # print(len(k))
     # s = course_set["Engineering"]["SoEEC"]["2nd_1st"]
@@ -127,19 +126,25 @@ def course(update, context):
             reply_markup=reply_markup,
         )
     else:
-        with open("allcourses.json") as courselist:
-            courselist = json.load(courselist)
+        try:
+            with open("allcourses.json") as courselist:
+                courselist = json.load(courselist)
 
-        BOT.send_message(
-            chat_id=query.message.chat_id,
-            text="You will Recieve " + s[int(query.data)][0],
-        )
+            BOT.send_message(
+                chat_id=query.message.chat_id,
+                text="You will Recieve " + s[int(query.data)][0],
+            )
 
-        courseCode = s[int(query.data)][1]
-        # print(courseCode)
-        courseFileID = str(courselist[courseCode][1])
-        # print(courseFileID)
-        BOT.send_document(chat_id=query.message.chat_id, document=courseFileID)
+            courseCode = s[int(query.data)][1]
+            # print(courseCode)
+            courseFileID = str(courselist[courseCode][1])
+            # print(courseFileID)
+            BOT.send_document(chat_id=query.message.chat_id, document=courseFileID)
+        except:
+            BOT.send_message(
+                chat_id=update.effective_chat.id,
+                text="Oops! Course Not Added Yet.",
+            )
     # print("course", context.user_data)
 
     return 8
